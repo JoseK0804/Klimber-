@@ -1,0 +1,273 @@
+{
+	"info": {
+		"_postman_id": "1e28b507-7180-42f2-8f91-a573b670e9d3",
+		"name": "Spotify",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27724184"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let grant_type = \"client_credentials\";\r",
+							"pm.globals.set(\"grant_type\", grant_type);\r",
+							"\r",
+							"let client_id = \"99881aed07764a7f9be0e9cd41c39798\";\r",
+							"pm.globals.set(\"client_id\", client_id);\r",
+							"\r",
+							"let client_secret = \"8cf39d4d8f874efb988eb048b7c67420\";\r",
+							"pm.globals.set(\"client_secret\", client_secret);\r",
+							"\r",
+							"let artistId = \"4q3ewBCX7sLwd24euuV69X\";\r",
+							"pm.globals.set(\"artistId\", artistId);\r",
+							"\r",
+							"var Test = () => {\r",
+							"\r",
+							"pm.test(\"Comprobar sí el codigo del estatus es 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Comprobar sí el tiempo de respuesta es menor a 6s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"}\r",
+							"\r",
+							"pm.globals.set(\"Test\",Test.toString());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.globals.get(\"Test\"))();",
+							"",
+							"var jsonData = pm.response.json();",
+							"const token = jsonData.access_token;",
+							"pm.globals.set(\"token\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "{{grant_type}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client_id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://accounts.spotify.com/api/token",
+					"protocol": "https",
+					"host": [
+						"accounts",
+						"spotify",
+						"com"
+					],
+					"path": [
+						"api",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "artist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.globals.get(\"Test\"))();\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://api.spotify.com/v1/artists/{{artistId}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"spotify",
+						"com"
+					],
+					"path": [
+						"v1",
+						"artists",
+						"{{artistId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "albums",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.globals.get(\"Test\"))();\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"const albumId = jsonData.items[0].id;\r",
+							"pm.globals.set(\"albumId\", albumId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://api.spotify.com/v1/artists/{{artistId}}/albums",
+					"protocol": "https",
+					"host": [
+						"api",
+						"spotify",
+						"com"
+					],
+					"path": [
+						"v1",
+						"artists",
+						"{{artistId}}",
+						"albums"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "albums/track",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.globals.get(\"Test\"))();\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"const trackId = jsonData.items[1].id;\r",
+							"pm.globals.set(\"trackId\", trackId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://api.spotify.com/v1/albums/{{albumId}}/tracks",
+					"protocol": "https",
+					"host": [
+						"api",
+						"spotify",
+						"com"
+					],
+					"path": [
+						"v1",
+						"albums",
+						"{{albumId}}",
+						"tracks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "track",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"eval(pm.globals.get(\"Test\"))();\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "https://api.spotify.com/v1/tracks/{{trackId}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"spotify",
+						"com"
+					],
+					"path": [
+						"v1",
+						"tracks",
+						"{{trackId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
